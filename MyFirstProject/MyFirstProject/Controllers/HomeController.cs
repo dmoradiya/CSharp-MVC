@@ -27,8 +27,13 @@ namespace MyFirstProject.Controllers
         {
             return View();
         }
-        public IActionResult TestPage()
+        public IActionResult TestPage(string item)
         {
+           
+            if (!string.IsNullOrWhiteSpace(item))
+            {
+                ViewBag.AddedItem = item;
+            }
             return View();
         }
 

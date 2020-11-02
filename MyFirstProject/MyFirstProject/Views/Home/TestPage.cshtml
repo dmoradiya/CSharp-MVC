@@ -6,3 +6,15 @@
 <h1>TestPage</h1>
 
 <p1>The Current Time : @(DateTime.Now.ToLongTimeString())</p1>
+
+<form action="/Home/TestPage" method="get">
+    <label id="item">Item</label>
+    <input type="text" id="item" name="item" value="" />
+    <input type="submit" value="Submit" />
+</form>
+<ul>
+        @if (!string.IsNullOrWhiteSpace(ViewBag.AddedItem))
+            {
+                <li>@(ViewBag.AddedItem)</li>
+            }
+</ul>
