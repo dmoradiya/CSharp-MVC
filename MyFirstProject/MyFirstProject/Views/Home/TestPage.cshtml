@@ -1,20 +1,24 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "TestPage";
 }
 
 <h1>TestPage</h1>
 
-<p1>The Current Time : @(DateTime.Now.ToLongTimeString())</p1>
+<p>The Current Time: @(DateTime.Now.ToLongTimeString())</p>
 
 <form action="/Home/TestPage" method="get">
-    <label id="item">Item</label>
-    <input type="text" id="item" name="item" value="" />
+    <label for="item">Item:</label>
+    <input id="item" type="text" name="item" value="" />
     <input type="submit" value="Submit" />
 </form>
+
+<!-- This is an HTML comment. -->
+@* This is a C# Razor comment. *@
+
 <ul>
-        @if (!string.IsNullOrWhiteSpace(ViewBag.AddedItem))
-            {
-                <li>@(ViewBag.AddedItem)</li>
-            }
+    @if (!string.IsNullOrWhiteSpace(ViewBag.AddedItem))
+    {
+    <li>@(ViewBag.AddedItem)</li>
+    }
 </ul>
+
