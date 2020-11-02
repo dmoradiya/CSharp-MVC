@@ -38,14 +38,18 @@ namespace MyFirstProject.Controllers
         {
             return View();
         }
-
+        
+        List<string> Item = new List<string>();
+         
         public IActionResult TestPage(string item)
         {
-
             if (!string.IsNullOrWhiteSpace(item))
             {
-                ViewBag.AddedItem = item;
+                Item.Add(item);
+               
             }
+
+            ViewBag.Items = Item;
 
             return View();
         }

@@ -15,10 +15,13 @@
 <!-- This is an HTML comment. -->
 @* This is a C# Razor comment. *@
 
-<ul>
-    @if (!string.IsNullOrWhiteSpace(ViewBag.AddedItem))
-    {
-    <li>@(ViewBag.AddedItem)</li>
-    }
-</ul>
+@if (ViewBag.Items.Count > 0)
+{
+    <ul>
+        @foreach (string item in ViewBag.Items)
+        {
+            <li>@(item)</li>
+        }
+    </ul>
+}
 
