@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyFirstProject.Models
 {
-    class PersonContext : DbContext
+    public class PersonContext : DbContext
     {
 
         public virtual DbSet<Person> People { get; set; }
