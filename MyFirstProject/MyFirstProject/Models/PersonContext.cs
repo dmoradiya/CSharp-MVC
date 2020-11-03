@@ -9,6 +9,7 @@ namespace MyFirstProject.Models
     class PersonContext : DbContext
     {
 
+        public virtual DbSet<Person> People { get; set; }
         public virtual DbSet<EMailAddress> EMailAddresses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
