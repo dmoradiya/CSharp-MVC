@@ -12,61 +12,119 @@ namespace MyFirstProject.Controllers
     {
         public IActionResult Index()
         {
-            Debug.WriteLine("ACTION - Index Action");
-
             return RedirectToAction("Management");
         }
 
         public IActionResult Management()
         {
-            Debug.WriteLine("ACTION - Management Action");
-            ViewBag.People = People;
+            ViewBag.People = GetPeople();
             return View();
         }
 
-        public IActionResult Create(string firstName, string lastName)
+        public IActionResult Details(string id)
         {
-            Debug.WriteLine("ACTION - Create Action");
+            try
+            {
+                ViewBag.Person = GetPersonByID(id);
+            }
+            catch
+            {
 
-            CreatePerson(firstName, lastName);
+            }
+            return View();
+        }
+
+        public IActionResult AddEmail(string id, string address)
+        {
+            AddEmailToPersonByID(id, address);
+            return RedirectToAction("Details", new Dictionary<string, string>() { { "id", id } });
+        }
+
+        public IActionResult Create(string firstName, string lastName, string dateOfBirth)
+        {
+            CreatePerson(firstName, lastName, dateOfBirth);
             return RedirectToAction("Management");
         }
 
         public IActionResult Delete(string firstName)
         {
-            Debug.WriteLine("ACTION - Delete Action");
-
             DeletePersonByFirstName(firstName);
             return RedirectToAction("Management");
         }
 
-        public static List<Person> People = new List<Person>();
-
         // These methods are for data management. The body of the methods will be replaced with EF code tomorrow, but for now, we're just using a static list.
-        public void CreatePerson(string firstName, string lastName)
+        public void CreatePerson(string firstName, string lastName, string dateOfBirth)
         {
-            Debug.WriteLine($"DATA - CreatePerson({firstName}, {lastName})");
-
-            People.Add(new Person()
+            using (PersonContext context = new PersonContext())
             {
-                FirstName = firstName.Trim(),
-                LastName = lastName.Trim()
-            });
-        }
+                context.People.Add(new Person()
+                {
+                    FirstName = firstName.Trim(),
+                    LastName = lastName.Trim(),
+                    DateOfBirth = DateTime.Parse(dateOfBirth.Trim())
+                });
+                context.SaveChanges();
 
+            }
+        }
         public void DeletePersonByFirstName(string firstName)
         {
-            Debug.WriteLine($"DATA - DeletePersonByFirstName({firstName})");
+            using (PersonContext context = new PersonContext())
+            {
+                context.People.Remove(GetPersonByFirstName(firstName));
+                context.SaveChanges();
+            }
+        }
 
-            People.Remove(GetPersonByFirstName(firstName));
+        public void AddEmailToPersonByID(string id, string address)
+        {
+            using (PersonContext context = new PersonContext())
+            {
+                context.EMailAddresses.Add(new EMailAddress()
+                {
+                    PersonID = int.Parse(id),
+                    Address = address.Trim()
+                });
+                context.SaveChanges();
+            }
         }
 
         public Person GetPersonByFirstName(string firstName)
         {
-            Debug.WriteLine($"DATA - GetPersonByFirstName({firstName})");
+            Person found;
+            using (PersonContext context = new PersonContext())
+            {
+                found = context.People.Where(x => x.FirstName.Trim().ToUpper() == firstName.Trim().ToUpper()).SingleOrDefault();
+            }
+            return found;
+        }
 
-            // This assumes nobody's name is duplicated. If it is, it will return null.
-            return People.Where(x => x.FirstName.Trim().ToUpper() == firstName.Trim().ToUpper()).SingleOrDefault();
+        public Person GetPersonByID(string id)
+        {
+            Person found;
+            using (PersonContext context = new PersonContext())
+            {
+                // Loading Option 1 - Eager:
+                // .Include() allows data from associated tables to be loaded as part of an initial query. By default, only the table requested via the context property (People, in this case) is loaded.
+                // found = context.People.Where(x => x.ID == int.Parse(id)).Include(x => x.EMailAddresses).SingleOrDefault();
+
+                // Loading Option 2 - Explicit:
+                found = context.People.Where(x => x.ID == int.Parse(id)).SingleOrDefault();
+
+                // With explicit loading, we can load after the initial query. Use Reference() for singular navigation properties, and Collection() for plural.
+                context.Entry(found).Collection(x => x.EMailAddresses).Load();
+            }
+            return found;
+        }
+
+        public List<Person> GetPeople()
+        {
+            List<Person> all;
+            using (PersonContext context = new PersonContext())
+            {
+                all = context.People.ToList();
+            }
+            return all;
         }
     }
 }
